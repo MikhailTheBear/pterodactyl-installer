@@ -33,6 +33,9 @@ cp .env.example .env
 composer install --no-dev --optimize-autoloader
 php artisan key:generate
 
+# Обновляем .env с доменом
+sed -i "s|APP_URL=.*|APP_URL=https://$domain|" .env
+
 # Настройка базы данных
 mysql -u root -e "CREATE DATABASE pterodactyl; CREATE USER 'pterodactyl'@'localhost' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON pterodactyl.* TO 'pterodactyl'@'localhost'; FLUSH PRIVILEGES;"
 
@@ -70,3 +73,35 @@ chown -R www-data:www-data /var/www/pterodactyl
 systemctl restart nginx
 
 echo "Установка Pterodactyl завершена!"
+
+# Установка Wings
+echo "Вы хотите установить Pterodactyl Wings? (yes/no)"
+read install_wings
+if [[ "$install_wings" == "yes" ]]; then
+    curl -Lo /usr/local/bin/wings https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_amd64
+    chmod u+x /usr/local/bin/wings
+    useradd -r -d /etc/pterodactyl -s /bin/false pterodactyl
+    mkdir -p /etc/pterodactyl
+    chown pterodactyl:pterodactyl /etc/pterodactyl
+    
+    cat > /etc/systemd/system/wings.service << EOF
+[Unit]
+Description=Pterodactyl Wings Daemon
+After=network.target
+
+[Service]
+User=pterodactyl
+WorkingDirectory=/etc/pterodactyl
+ExecStart=/usr/local/bin/wings
+Restart=always
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+    systemctl enable --now wings
+    echo "Wings установлен и запущен!"
+else
+    echo "Установка Wings пропущена."
+fi
