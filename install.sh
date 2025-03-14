@@ -95,7 +95,7 @@ networks:
         - subnet: 172.20.0.0/16
 EOF
 
-    echo "Paste it in nano and save (Ctrl + O, Enter, Ctrl + X, Enter). Press Enter to continue."
+    echo "Docker Compose file created. Open it in nano and save (Ctrl + O, Enter, Ctrl + X, Enter). Press Enter to continue."
     read -r
 
     nano docker-compose.yml
