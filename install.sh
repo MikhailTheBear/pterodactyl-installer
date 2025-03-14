@@ -18,7 +18,7 @@ if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
     read answer
     if [[ "$answer" == "linux" || "$answer" == "Linux" ]]; then
       apt install docker-compose
-    elif [[ "$answer" == "mac-os" || "$answer" == "Mac-os" ]]; then
+    else if [[ "$answer" == "mac-os" || "$answer" == "Mac-os" ]]; then
       echo "Go to https://docs.docker.com/desktop/setup/install/mac-install/ and install Docker"
     else:
       echo "Incorrect platform"
